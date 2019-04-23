@@ -27,7 +27,7 @@ class Model {
         resetGameTiles()
     }
 
-    private fun resetGameTiles() {
+    fun resetGameTiles() {
         gameTiles = arrayOf()
 
         for (row in 0 until FIELD_WIDTH) {
@@ -69,9 +69,9 @@ class Model {
     private fun compressTiles(tiles: Array<Tile>): Boolean {
         var change: Boolean = false
 
-        for (i in 0 until tiles.size) {
+        for (i in tiles.indices) {
             for (j in 0 until tiles.size - 1) {
-                if (tiles[j].isEmpty && !tiles[j].isEmpty) {
+                if (tiles[j].isEmpty && !tiles[j + 1].isEmpty) {
                     tiles[j] = tiles[j + 1]
                     tiles[j + 1] = Tile()
                     change = true
@@ -104,11 +104,50 @@ class Model {
         var change = false
 
         for (i in 0 until FIELD_WIDTH) {
-            change = compressTiles(gameTiles[i]) or mergeTiles(gameTiles[i])
+            //change = (compressTiles(gameTiles[i]) or mergeTiles(gameTiles[i]))
+            if (compressTiles(gameTiles[i]) or mergeTiles(gameTiles[i])) change = true
         }
 
         if (change) addTile()
 
+    }
+
+    fun right() {
+        rotation()
+        rotation()
+        left()
+        rotation()
+        rotation()
+    }
+
+    fun up() {
+        rotation()
+        rotation()
+        rotation()
+        left()
+        rotation()
+    }
+
+    fun down() {
+        rotation()
+        left()
+        rotation()
+        rotation()
+        rotation()
+    }
+
+    fun canMove(): Boolean {
+        if (emptyTiles.isNotEmpty()) return  true
+
+        for (i in 0 until FIELD_WIDTH - 1) {
+            for (j in 0 until FIELD_WIDTH - 1) {
+                if (gameTiles[i][j].value == gameTiles[i][j + 1].value) return true
+                if (gameTiles[i + 1][j].value == gameTiles[i][j].value) return true
+            }
+        }
+
+
+        return false
     }
 
 
